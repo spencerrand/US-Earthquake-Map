@@ -12,8 +12,16 @@ var myMap = L.map("map", {
 // Add a tile layer
 L.tileLayer(mapBox).addTo(myMap);
 
+// Define a markerSize function that will give each city a different radius based on its population
+function markerSize(mag) {
+  return mag * 10;
+}
+
 // perform API call
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson", createMarkers);
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson", function(data) {
+  createMarkers(data);
+});
+
 
 function createMarkers(response) {
 
@@ -24,16 +32,23 @@ function createMarkers(response) {
   for (var i = 0; i < quakes.length; i++){
     var quake = quakes[i];
 
-    // for each quake, create a marker and bind a popup with title
-    
-    var quakeMarker = L.circle(
+    // for each quake, create a circle and bind a popup with title
+    L.circle(
       [quake.geometry.coordinates[1], quake.geometry.coordinates[0]],
-      {
+      )
+      .bindPopup("<h3>" + quake.properties.title + "</h3>").addTo(myMap);
+
+      var geojsonMarkerOptions = {
         fillOpacity: 0.75,
         color: "black",
         fillColor: "purple",
-        radius: (quake.properties.mag * 10)
-      })
-      .bindPopup("<h3>" + quake.properties.title + "</h3>").addTo(myMap);
+        radius: markerSize(quake.properties.mag)
+      };
+
+      // L.geoJSON(someGeojsonFeature, {
+      //   pointToLayer: function (feature, latlng) {
+      //       return L.circleMarker(latlng, geojsonMarkerOptions);
+      //   }
+      // }).addTo(map);
   }
 }

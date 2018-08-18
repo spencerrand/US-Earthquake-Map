@@ -1,1 +1,1 @@
-# Unit-17-Mapping
+Mapping US earthquakes using JavaScript
